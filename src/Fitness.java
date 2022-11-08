@@ -2,6 +2,7 @@
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
 import static java.util.Calendar.HOUR;
 
 public class Fitness {
@@ -13,11 +14,15 @@ public class Fitness {
     private PassTicket[] gymZone = new PassTicket[zonesPeopleLimit];
     private PassTicket[] poolZone = new PassTicket[zonesPeopleLimit];
     private PassTicket[] groupZone = new PassTicket[zonesPeopleLimit];
-    Calendar fitnessCalendar = new GregorianCalendar();
+    protected static Calendar fitnessCalendar = new GregorianCalendar();
     private SimpleDateFormat wholeDateFormat = new SimpleDateFormat("d MMMM yyyy, HH:mm");
-    SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
+    private SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
 
     public Fitness() {
+    }
+
+    protected Calendar getFitnessCalendar() {
+        return fitnessCalendar;
     }
 
     private void setTicketGymZone(PassTicket[] passTicket) {
@@ -80,7 +85,7 @@ public class Fitness {
     protected void startFitnessWorkingDays(int fitnessWorkingDay, PassTicket[] gymTicket, PassTicket[] poolTicket, PassTicket[] groupTicket) {
         int fitnessWorkDays = 0;
         fitnessCalendar.set(Calendar.MINUTE, 59);
-        fitnessCalendar.set(Calendar.HOUR, 8);
+        fitnessCalendar.set(Calendar.HOUR_OF_DAY, 8);
 
         for (int day = 0; day < fitnessWorkingDay; day++) {
             System.out.println("*** Открытие фитнес-клуба - 8:00 ***");

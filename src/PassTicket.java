@@ -1,5 +1,4 @@
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 public class PassTicket {
 
@@ -8,12 +7,13 @@ public class PassTicket {
     private String clientFirstName;
     private String clientLastName;
     private PassTicketCategory passTicketCategory;
-
-    private final Calendar calendar = new GregorianCalendar();
+    private Calendar passTicketDate;
+    private Calendar passTicketEndDate;
 
     public PassTicket(PassTicketCategory category, int validityDays, int clientBirthYear, String clientFirstName, String clientLastName) {
+        passTicketDate = Fitness.fitnessCalendar;
 
-        if (validityDays <= 0 || clientBirthYear < calendar.get(Calendar.YEAR) - 100 || clientBirthYear > calendar.get(Calendar.YEAR) - 10 ||
+        if (validityDays <= 0 || clientBirthYear < passTicketDate.get(Calendar.YEAR) - 100 || clientBirthYear > passTicketDate.get(Calendar.YEAR) - 10 ||
                 clientFirstName.length() < 2 || clientLastName.length() < 2) {
             throw new IllegalArgumentException("Данные введены некорректно <Information inserted incorrect>");
         } else if (!category.equals(PassTicketCategory.ONETIME)) {
@@ -29,6 +29,8 @@ public class PassTicket {
             this.clientLastName = clientLastName;
             passTicketCategory = category;
         }
+        passTicketEndDate = passTicketDate;
+        passTicketEndDate.add(Calendar.DAY_OF_YEAR, +validityDays);
     }
 
     protected PassTicketCategory getTicketCategory() {
