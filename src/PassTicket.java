@@ -1,55 +1,46 @@
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import static java.util.Calendar.DAY_OF_YEAR;
 
 public class PassTicket {
-
-    private int clientBirthYear;
+    // Все доступности описать тут
     private int validityDays;
-    private String clientFirstName;
-    private String clientLastName;
-    private PassTicketCategory passTicketCategory;
     private Calendar passTicketDate;
     private Calendar passTicketEndDate;
+    private String passTicketCategory;
+    private VisitorDataBase visitor;
 
-    public PassTicket(PassTicketCategory category, int validityDays, int clientBirthYear, String clientFirstName, String clientLastName) {
-        passTicketDate = Fitness.fitnessCalendar;
-
-        if (validityDays <= 0 || clientBirthYear < passTicketDate.get(Calendar.YEAR) - 100 || clientBirthYear > passTicketDate.get(Calendar.YEAR) - 10 ||
-                clientFirstName.length() < 2 || clientLastName.length() < 2) {
-            throw new IllegalArgumentException("Данные введены некорректно <Information inserted incorrect>");
-        } else if (!category.equals(PassTicketCategory.ONETIME)) {
-            this.validityDays = validityDays;
-            this.clientBirthYear = clientBirthYear;
-            this.clientFirstName = clientFirstName;
-            this.clientLastName = clientLastName;
-            passTicketCategory = category;
+    public PassTicket(String passTicketCategory, int validityDays, VisitorDataBase visitor) {
+        passTicketDate = new GregorianCalendar();
+        if (!passTicketCategory.equals("single") && !passTicketCategory.equals("daytime") && !passTicketCategory.equals("unlimited")) {
+            throw new IllegalArgumentException("Аргументом для <категория> могут быть только: \"single\", \"daytime\", \"unlimited\"");
+        } else if (validityDays < 1 || validityDays > 1000) {
+            throw new IllegalArgumentException("Срок действия абонемента не может быть менее 1 дня и более 1000 дней");
         } else {
-            this.validityDays = 1;
-            this.clientBirthYear = clientBirthYear;
-            this.clientFirstName = clientFirstName;
-            this.clientLastName = clientLastName;
-            passTicketCategory = category;
+            this.passTicketCategory = passTicketCategory;
+            this.validityDays = validityDays;
         }
-        passTicketEndDate = passTicketDate;
-        passTicketEndDate.add(Calendar.DAY_OF_YEAR, +validityDays);
+        if (passTicketCategory.equals("single")) validityDays = 1;
+        passTicketEndDate = passTicketDate = new GregorianCalendar();
+        passTicketEndDate.add(DAY_OF_YEAR, +validityDays);
+        this.visitor = visitor;
     }
 
-    protected PassTicketCategory getTicketCategory() {
+    protected String getPassTicketCategory() {
         return passTicketCategory;
     }
 
-    protected String getClientFirstName() {
-        return clientFirstName + " ";
+    protected VisitorDataBase getVisitor() {
+        return visitor;
     }
 
-    protected String getClientLastName() {
-        return clientLastName + " ";
-    }
-
-    protected int getValidityDays() {
-        return validityDays;
+    protected Calendar getPassTicketEndDate() {
+        return passTicketEndDate;
     }
 
 }
+
 //В фитнес клубе есть три типа абонементов:
 //
 //Разовый (на один день). По разовому абонементу клиенты могут посещать бассейн и тренажерный зал с 8 до 22 часов.

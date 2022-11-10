@@ -1,30 +1,23 @@
+import java.util.Calendar;
 
 public class FitnessApplication {
+
+
     public static void main(String[] args) {
 
-        // форма заполнения абонемента(тип абонемента <разовый, дневной, полный>, срок действия <дней>, год рождения клиента, имя, фамилия)
-        // осуществляются проверки: разовый абонемент независимо от введённого числа - всегда на один день
-        // клиент не может быть старше 100 и младше 10 лет (эйджизм)
-        // имя и фамилия не могут быть короче двух символов
-        PassTicket client0 = new PassTicket(PassTicketCategory.ONETIME, 1, 2007, "Однораз", "Абонементов");
-        PassTicket client1 = new PassTicket(PassTicketCategory.DAYTIME, 10, 1998, "Днев", "Абон");
-        PassTicket client2 = new PassTicket(PassTicketCategory.FULLTIME, 3, 1991, "Пол", "Аб");
+        // данные о владельце д.б. вынесены в отдельный класс
+        VisitorDataBase visitor = new VisitorDataBase("Имя", "Фамилия", 1999);
 
-        Fitness fitness = new Fitness();
+        // Аргументом для <категория> могут быть только: "single", "daytime", "unlimited"
+        PassTicket passticket = new PassTicket("unlimited", 5, visitor); // абонемент
 
-        PassTicket[] gymZone = {client0, client1, client2, client1, client2};  // массив клиентов, желающие попасть в тренажёрный зал. В очередях во все три зоны клиентов может быть больше 20, но пройдут только 20
-        PassTicket[] poolZone = {client2, client1, client2, client0, client0};  // массив клиентов, желающие попасть в бассейн
-        PassTicket[] groupZone = {client1, client2, client0, client0, client1};  // массив клиентов, желающие попасть на групповые тренировки
+        // class Fitness - ПО ЗАДАНИЮ метод регистрации абонемента должен принимать на вход один абонемент и желаемую зону (больше ничего),
+        // далее этот абонемент проверяется на возможность посещения и добавляется в одну из зон (массив абонементов)
+        // Аргументом для <trainingZone> могут быть только: "gymZone", "poolZone", "groupZone"
+        FitnessClub fitness = new FitnessClub(passticket, "groupZone");
 
-
-        // В метод передаются (int количество дней работы, массив абонентов фитнес зоны, бассейна, групповых занятий)
-        fitness.startFitnessWorkingDays(4, gymZone, poolZone, groupZone);  // TODO: God Object:) метод для имитации многодневной работы фитнес-клуба
-
-
-        // В метод передаются (массив абонентов фитнес зоны, бассейна, групповых занятий)
-//        fitness.oneFitnessWorkingDay(gymZone, poolZone, groupZone);  // TODO: метод для имитации одного дня работы фитнес-клуба
-
-
+        fitness.fitnessZonesCurrentlyInfo();
+        
     }
 }
 // Задача «Фитнес»
