@@ -1,6 +1,7 @@
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
 import static java.util.Calendar.*;
 
 public class FitnessClub {
@@ -32,7 +33,7 @@ public class FitnessClub {
         fitnessWorkdayEnd();
     }
 
-    protected String isValidityZone(String trainingZone) {
+    private String isValidityZone(String trainingZone) {
         for (String s : validityZone) {
             if (s.equals(trainingZone)) return trainingZone;
         }
@@ -123,8 +124,9 @@ public class FitnessClub {
         System.out.println("\n ");
     }
 
-    protected void fitnessWorkdayEnd() {
+    private void fitnessWorkdayEnd() {
         calendar.set(HOUR_OF_DAY, 22);
+        calendar.set(MINUTE, 0);
         System.out.println("\n" + wholeDateFormat.format(calendar.getTime()) + " *Фитнес клуб закончил работу, все посетители ушли*");
         for (int i = 0; i < zonesPeopleLimit; i++) {
             gymZone[i] = null;

@@ -17,7 +17,7 @@ public class FitnessApplication {
         FitnessClub fitness = new FitnessClub(passticket, "groupZone");
 
         fitness.fitnessZonesCurrentlyInfo();
-        
+
     }
 }
 // Задача «Фитнес»
