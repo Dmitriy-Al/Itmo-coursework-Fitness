@@ -27,7 +27,7 @@ public class VisitorDataBase {
     }
 
     protected String getVisitorLastName() {
-        return visitorLastName + " ";
+        return visitorLastName;
     }
 
     protected int getVisitorBirthYear() {

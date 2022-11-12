@@ -8,27 +8,22 @@ public class PassTicket {
     private int validityDays;
     private Calendar passTicketDate;
     private Calendar passTicketEndDate;
-    private String passTicketCategory;
     private VisitorDataBase visitor;
+    private PassTicketCategory passTicketCategory;
 
-    public PassTicket(String passTicketCategory, int validityDays, VisitorDataBase visitor) {
+    public PassTicket(VisitorDataBase visitor, PassTicketCategory passTicketCategory, int validityDays) {
         passTicketDate = new GregorianCalendar();
-        if (!passTicketCategory.equals("single") && !passTicketCategory.equals("daytime") && !passTicketCategory.equals("unlimited")) {
-            throw new IllegalArgumentException("Аргументом для <категория> могут быть только: \"single\", \"daytime\", \"unlimited\"");
-        } else if (validityDays < 1 || validityDays > 1000) {
+
+        if (validityDays < 1 || validityDays > 1000) {
             throw new IllegalArgumentException("Срок действия абонемента не может быть менее 1 дня и более 1000 дней");
         } else {
             this.passTicketCategory = passTicketCategory;
             this.validityDays = validityDays;
+            if (passTicketCategory != PassTicketCategory.SINGLE) validityDays = 1;
+            passTicketEndDate = new GregorianCalendar();
+            passTicketEndDate.add(DAY_OF_YEAR, +validityDays);
+            this.visitor = visitor;
         }
-        if (passTicketCategory.equals("single")) validityDays = 1;
-        passTicketEndDate = passTicketDate = new GregorianCalendar();
-        passTicketEndDate.add(DAY_OF_YEAR, +validityDays);
-        this.visitor = visitor;
-    }
-
-    protected String getPassTicketCategory() {
-        return passTicketCategory;
     }
 
     protected VisitorDataBase getVisitor() {
@@ -37,6 +32,27 @@ public class PassTicket {
 
     protected Calendar getPassTicketEndDate() {
         return passTicketEndDate;
+    }
+
+    protected PassTicketCategory getPassTicketCategory() {
+        return passTicketCategory;
+    }
+
+    public enum PassTicketCategory {
+
+        SINGLE(22),
+        DAYTIME(16),
+        UNLIMITED(22);
+
+        private int goOutTime;
+
+        PassTicketCategory(int goOutTime) {
+            this.goOutTime = goOutTime;
+        }
+
+        int getGoOutTime() {
+            return goOutTime;
+        }
     }
 
 }

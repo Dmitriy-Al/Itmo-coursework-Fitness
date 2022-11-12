@@ -1,5 +1,3 @@
-import java.util.Calendar;
-
 public class FitnessApplication {
 
 
@@ -8,15 +6,16 @@ public class FitnessApplication {
         // данные о владельце д.б. вынесены в отдельный класс
         VisitorDataBase visitor = new VisitorDataBase("Имя", "Фамилия", 1999);
 
-        // Аргументом для <категория> могут быть только: "single", "daytime", "unlimited"
-        PassTicket passticket = new PassTicket("unlimited", 5, visitor); // абонемент
+        // Аргументом для <passTicketCategory> могут быть только перечисления: SINGLE, DAYTIME, UNLIMITED;
+        PassTicket passticket = new PassTicket(visitor, PassTicket.PassTicketCategory.UNLIMITED, 10);
 
         // class Fitness - ПО ЗАДАНИЮ метод регистрации абонемента должен принимать на вход один абонемент и желаемую зону (больше ничего),
         // далее этот абонемент проверяется на возможность посещения и добавляется в одну из зон (массив абонементов)
-        // Аргументом для <trainingZone> могут быть только: "gymZone", "poolZone", "groupZone"
-        FitnessClub fitness = new FitnessClub(passticket, "groupZone");
 
-        fitness.fitnessZonesCurrentlyInfo();
+        // Аргументом для <fitnessZone> могут быть только: GYMZONE, POOLZONE, GROUPZONE;
+        FitnessClub fitness1 = new FitnessClub(passticket, FitnessClub.FitnessZone.GROUPZONE);
+
+        fitness1.showZonesCurrentlyInfo();
 
     }
 }

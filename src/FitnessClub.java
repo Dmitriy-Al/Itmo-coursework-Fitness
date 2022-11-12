@@ -9,106 +9,50 @@ public class FitnessClub {
     // class Fitness - ПО ЗАДАНИЮ метод регистрации абонемента должен принимать на вход один абонемент и желаемую зону (больше ничего),
     // далее этот абонемент проверяется на возможность посещения и добавляется в одну из зон (массив абонементов)
 
-    private final int zonesPeopleLimit = 20;
-    private final String validDaysEnd = "Посетитель не может войти, так как срок действия абонемента закончился";
-    private final String zoneIsFull = "Посетитель не может войти, так как зал вмещает не более 20 человек";
-    private final String timeIsEnd = "Посетитель не может войти, так как время для посещения истекло";
-    private final String passTicketWrong = "Посетитель не может войти в желаемую зону с данным типом абонемента";
-    private final String[] validityZone = {"gymZone", "poolZone", "groupZone"}; // Зоны доступные для посещения(массив строк или перечислений)
-    private PassTicket[] gymZone = new PassTicket[zonesPeopleLimit];
-    private PassTicket[] poolZone = new PassTicket[zonesPeopleLimit];
-    private PassTicket[] groupZone = new PassTicket[zonesPeopleLimit];
-    private Calendar calendar = new GregorianCalendar();
-    private SimpleDateFormat wholeDateFormat = new SimpleDateFormat("d MMMM yyyy, HH:mm");
+    private PassTicket[] gymZone = new PassTicket[FitnessZone.GYMZONE.zonePeopleLimit];
+    private PassTicket[] poolZone = new PassTicket[FitnessZone.POOLZONE.zonePeopleLimit];
+    private PassTicket[] groupZone = new PassTicket[FitnessZone.GROUPZONE.zonePeopleLimit];
+    private final Calendar calendar = new GregorianCalendar();
+    private final  SimpleDateFormat wholeDateFormat = new SimpleDateFormat("d MMMM yyyy, HH:mm");
 
-    public FitnessClub(PassTicket passTicket, String trainingZone) {
-        if (isValidityZone(trainingZone).equals("gymZone")) {
-            setVisitorInGymZone(passTicket);
-        } else if (isValidityZone(trainingZone).equals("poolZone")) {
-            setVisitorInPoolZone(passTicket);
-        } else if (isValidityZone(trainingZone).equals("groupZone")) {
-            setVisitorInGroupZone(passTicket);
-        }
-        fitnessZonesCurrentlyInfo();
+    public FitnessClub(PassTicket passTicket, FitnessZone fitnessZone) {
+        showZonesCurrentlyInfo();
+        System.out.println("<Фитнес клуб работает>");
+        checkVisitor(passTicket, fitnessZone);
+        showZonesCurrentlyInfo();
         fitnessWorkdayEnd();
     }
 
-    private String isValidityZone(String trainingZone) {
-        for (String s : validityZone) {
-            if (s.equals(trainingZone)) return trainingZone;
-        }
-        throw new IllegalArgumentException("Аргументом для <trainingZone> могут быть только: \"gymZone\", \"poolZone\", \"groupZone\"");
-    }
-
-    private void setVisitorInGymZone(PassTicket passTicket) {
-        if (passTicket.getPassTicketEndDate().get(DAY_OF_YEAR) < calendar.get(DAY_OF_YEAR)) {
-            System.out.println(validDaysEnd);
+    private void checkVisitor(PassTicket passTicket, FitnessZone fitnessZone) {
+        if (passTicket.getPassTicketEndDate().get(DAY_OF_YEAR) < calendar.get(DAY_OF_YEAR)) { // Проверки времени оставил всё же ресепшену фитнеса
+            System.out.println(SystemMessage.VALID_DAYS_END);
             return;
         }
-        if (calendar.get(HOUR_OF_DAY) > 8) {
-            if ((passTicket.getPassTicketCategory().equals("single") || passTicket.getPassTicketCategory().equals("unlimited") && calendar.get(HOUR_OF_DAY) < 22) ||
-                    (passTicket.getPassTicketCategory().equals("daytime") && calendar.get(HOUR_OF_DAY) < 16)) {
-                for (int i = 0; i < gymZone.length; i++) {
-                    if (gymZone[i] == null) {
-                        gymZone[i] = passTicket;
-                        System.out.println(passTicket.getVisitor().getVisitorFirstName() + passTicket.getVisitor().getVisitorLastName() +
-                                "проходит в тренажёрный зал " + wholeDateFormat.format(calendar.getTime()));
-                        break;
-                    } else {
-                        System.out.println(zoneIsFull);
-                    }
-                }
-            } else System.out.println(timeIsEnd);
-        }
-    }
-
-    private void setVisitorInPoolZone(PassTicket passTicket) {
-        if (passTicket.getPassTicketEndDate().get(DAY_OF_YEAR) < calendar.get(DAY_OF_YEAR)) {
-            System.out.println(validDaysEnd);
+        if (passTicket.getPassTicketCategory().getGoOutTime() <= calendar.get(HOUR_OF_DAY) || calendar.get(HOUR_OF_DAY) < 8) {
+            System.out.println(SystemMessage.TIME_IS_END);
             return;
         }
-        if (passTicket.getPassTicketCategory().equals("daytime")) {
-            System.out.println(passTicketWrong);
-        } else if (passTicket.getPassTicketCategory().equals("single") || passTicket.getPassTicketCategory().equals("unlimited") &&
-                calendar.get(HOUR_OF_DAY) > 8 && calendar.get(HOUR_OF_DAY) < 22) {
-            for (int i = 0; i < poolZone.length; i++) {
-                if (poolZone[i] == null) {
-                    poolZone[i] = passTicket;
-                    System.out.println(passTicket.getVisitor().getVisitorFirstName() + passTicket.getVisitor().getVisitorLastName() +
-                            "проходит в бассейн " + wholeDateFormat.format(calendar.getTime()));
-                    break;
-                } else {
-                    System.out.println(zoneIsFull);
-                }
-            }
-        } else System.out.println(timeIsEnd);
+        if (fitnessZone == FitnessZone.GYMZONE) {
+            addToZone(passTicket, fitnessZone, gymZone);
+        } else if (fitnessZone == FitnessZone.POOLZONE && passTicket.getPassTicketCategory() != PassTicket.PassTicketCategory.DAYTIME) {
+            addToZone(passTicket, fitnessZone, poolZone);
+        } else if (fitnessZone == FitnessZone.GROUPZONE && passTicket.getPassTicketCategory() != PassTicket.PassTicketCategory.SINGLE) {
+            addToZone(passTicket, fitnessZone, groupZone);
+        } else System.out.println(SystemMessage.PASS_TICKET_WRONG);
     }
 
-    private void setVisitorInGroupZone(PassTicket passTicket) {
-        if (passTicket.getPassTicketEndDate().get(DAY_OF_YEAR) < calendar.get(DAY_OF_YEAR)) {
-            System.out.println(validDaysEnd);
-            return;
-        }
-        if (passTicket.getPassTicketCategory().equals("single")) {
-            System.out.println(passTicketWrong);
-        } else if (calendar.get(HOUR_OF_DAY) > 8) {
-            if ((passTicket.getPassTicketCategory().equals("daytime") && calendar.get(HOUR_OF_DAY) < 16) ||
-                    passTicket.getPassTicketCategory().equals("unlimited") && calendar.get(HOUR_OF_DAY) < 22) {
-                for (int i = 0; i < groupZone.length; i++) {
-                    if (groupZone[i] == null) {
-                        groupZone[i] = passTicket;
-                        System.out.println(passTicket.getVisitor().getVisitorFirstName() + passTicket.getVisitor().getVisitorLastName() +
-                                "проходит в зону групповых тренировок " + wholeDateFormat.format(calendar.getTime()));
-                        break;
-                    } else {
-                        System.out.println(zoneIsFull);
-                    }
-                }
-            } else System.out.println(timeIsEnd);
+    private void addToZone(PassTicket passTicket, FitnessZone fitnessZone, PassTicket[] zone) {
+        for (int i = 0; i < zone.length; i++) {
+            if (zone[i] == null) {
+                zone[i] = passTicket;
+                System.out.println(passTicket.getVisitor().getVisitorFirstName() + passTicket.getVisitor().getVisitorLastName() +
+                        "проходит в " +  fitnessZone.getZoneName() + " " + wholeDateFormat.format(calendar.getTime()));
+                break;
+            } else System.out.println(SystemMessage.ZONE_IS_FULL);
         }
     }
 
-    protected void fitnessZonesCurrentlyInfo() {
+    protected void showZonesCurrentlyInfo() {
         System.out.println("\n  В тренажёрном зале находятся: ");
         for (PassTicket p : gymZone)
             if (p != null)
@@ -127,13 +71,31 @@ public class FitnessClub {
     private void fitnessWorkdayEnd() {
         calendar.set(HOUR_OF_DAY, 22);
         calendar.set(MINUTE, 0);
-        System.out.println("\n" + wholeDateFormat.format(calendar.getTime()) + " *Фитнес клуб закончил работу, все посетители ушли*");
-        for (int i = 0; i < zonesPeopleLimit; i++) {
+        for (int i = 0; i < 20; i++) {
             gymZone[i] = null;
             poolZone[i] = null;
             groupZone[i] = null;
         }
+        System.out.println("\n" + wholeDateFormat.format(calendar.getTime()) + " <Фитнес клуб закончил работу, все посетители ушли>");
+    }
+
+    public enum FitnessZone {
+
+        GYMZONE(20, "тренажёрный зал"),
+        POOLZONE(20, "бассейн"),
+        GROUPZONE(20, "зал групповых занятий");
+
+        private int zonePeopleLimit;
+        private final String zoneName;
+
+        FitnessZone(int zonesPeopleLimit, String zoneName) {
+            this.zonePeopleLimit = zonesPeopleLimit;
+            this.zoneName = zoneName;
+        }
+
+        String getZoneName(){
+            return zoneName;
+        }
     }
 
 }
-
